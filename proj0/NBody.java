@@ -8,8 +8,8 @@ public class NBody {
     }
 
     /** Keep looking until the file is empty. */
-    public static Body[] readplanets(String FileName) {
-        Body[] planets = new Body[5];
+    public static Planet[] readplanets(String FileName) {
+        Planet[] planets = new Planet[5];
         In in = new In(FileName);
         int Number = in.readInt();
         double radius = in.readDouble();
@@ -20,7 +20,7 @@ public class NBody {
             double yyVel = in.readDouble();
             double mass = in.readDouble();
             String planet = in.readString();
-            planets[i] = new Body(xxPos, yyPos, xxVel, yyVel, mass, planet);
+            planets[i] = new Planet(xxPos, yyPos, xxVel, yyVel, mass, planet);
         }
         return planets;
     }
@@ -30,12 +30,12 @@ public class NBody {
         double dt = Double.parseDouble(args[1]);
         String filename = args[2];
         double radius = readRadius(filename);
-        Body[] planets = readplanets(filename);
+        Planet[] planets = readplanets(filename);
         /*Draw the background. */
         StdDraw.setScale(-radius, radius);
         StdDraw.picture(0, 0, "images/starfield.jpg", 2 * radius, 2 * radius);
         /* Draws five cool planets. */
-        for (Body b : planets) {
+        for (Planet b : planets) {
             b.draw();
         }
         StdDraw.enableDoubleBuffering();
@@ -51,7 +51,7 @@ public class NBody {
             }
             StdDraw.picture(0, 0, "images/starfield.jpg", 2 * radius, 2 * radius);
             /* Draws five cool planets. */
-            for (Body b : planets) {
+            for (Planet b : planets) {
                 b.draw();
             }
             StdDraw.show();

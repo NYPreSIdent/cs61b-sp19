@@ -12,7 +12,7 @@
 		public final double Grav = 6.67e-11;
 
 		/** The normal constructor that needs some parameters. */
-		public Body(double xP, double yP, double xV,
+		public Planet(double xP, double yP, double xV,
 					double yV, double m, String img) {
 						xxPos = xP;
 						yyPos = yP;
@@ -22,8 +22,8 @@
 						imgFileName = img;
 					}
 
-		/** copies a instance of Body. */
-		public Body(Body b){
+		/** copies a instance of Planet. */
+		public Planet(Planet b){
 			xxPos = b.xxPos;
 			yyPos = b.yyPos;
 			xxVel = b.xxVel;
@@ -54,8 +54,8 @@
 			}
  		}
 
-		/** Calculates the distance of two planet */
-		public double calcDistance(Body b) {
+		/** Calculates the distance of two Planet */
+		public double calcDistance(Planet b) {
 			double Distance;
 			double xxDistance;
 			double yyDistance;
@@ -66,14 +66,14 @@
 		}
 
 		/** Calculates the force in a double form. */
-		public double calcForceExertedBy(Body b) {
+		public double calcForceExertedBy(Planet b) {
 			double Force;
 			double Distance = calcDistance(b);
 			Force = (Grav * this.mass * b.mass) / square(Distance);
 			return Force;
 		}
 
-		public double calcForceExertedByX(Body b) {
+		public double calcForceExertedByX(Planet b) {
 			double dx;
 			double xxForce;
 			double Distance = calcDistance(b);
@@ -82,7 +82,7 @@
 			return xxForce;
 		}
 
-		public double calcForceExertedByY(Body b) {
+		public double calcForceExertedByY(Planet b) {
 			double dy;
 			double yyForce;
 			double Distance = calcDistance(b);
@@ -91,9 +91,9 @@
 			return yyForce;
 		}
 
-		public double calcNetForceExertedByX(Body[] bs) {
+		public double calcNetForceExertedByX(Planet[] bs) {
 			double xxForce = 0;
-			for (Body b : bs) {
+			for (Planet b : bs) {
 				if (b.equals(this)){
 					continue;
 				} else {
@@ -103,9 +103,9 @@
 			return xxForce;
 		}
 
-		public double calcNetForceExertedByY(Body[] bs) {
+		public double calcNetForceExertedByY(Planet[] bs) {
 			double yyForce = 0;
-			for (Body b : bs) {
+			for (Planet b : bs) {
 				if (b.equals(this)){
 					continue;
 				} else {

@@ -1,4 +1,4 @@
-public class Planet {
+public class NBody {
     /** Return the Radius of a planet. */
     public static double readRadius(String FileName) {
         In in = new In(FileName);

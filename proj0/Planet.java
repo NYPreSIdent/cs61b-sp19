@@ -1,7 +1,7 @@
 	import java.lang.Math;
 
 	/**Simulating a system of humen on the earth. */
-	public class Body {
+	public class Planet {
 		/* means x&y of position and velocity. */
 		public double xxPos;
 		public double yyPos;

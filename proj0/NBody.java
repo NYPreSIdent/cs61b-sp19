@@ -8,7 +8,7 @@ public class NBody {
     }
 
     /** Keep looking until the file is empty. */
-    public static Planet[] readplanets(String FileName) {
+    public static Planet[] readPlanets(String FileName) {
         Planet[] planets = new Planet[5];
         In in = new In(FileName);
         int Number = in.readInt();

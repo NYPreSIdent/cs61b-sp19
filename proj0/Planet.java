@@ -9,7 +9,7 @@
 		public double yyVel;
 		public double mass;
 		public String imgFileName;
-		public final double Grav = 6.67e-11;
+		private final double Grav = 6.67e-11;
 
 		/** The normal constructor that needs some parameters. */
 		public Planet(double xP, double yP, double xV,

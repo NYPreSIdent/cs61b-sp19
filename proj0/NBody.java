@@ -9,11 +9,15 @@ public class NBody {
 
     /** Keep looking until the file is empty. */
     public static Planet[] readPlanets(String FileName) {
-        Planet[] planets = new Planet[5];
+        int i = 0;
         In in = new In(FileName);
+        In inall = new In(FileName);
+        String[] line = inall.readAllLines();
+        int leng = line.length - 2;
+        Planet[] planets = new Planet[leng];
         int Number = in.readInt();
         double radius = in.readDouble();
-        for (int i = 0; i < 5; i += 1) {
+        while(!in.isEmpty()) {
             double xxPos = in.readDouble();
             double yyPos = in.readDouble();
             double xxVel = in.readDouble();
@@ -21,6 +25,7 @@ public class NBody {
             double mass = in.readDouble();
             String planet = in.readString();
             planets[i] = new Planet(xxPos, yyPos, xxVel, yyVel, mass, planet);
+            i += 1;
         }
         return planets;
     }
@@ -31,6 +36,7 @@ public class NBody {
         String filename = args[2];
         double radius = readRadius(filename);
         Planet[] planets = readPlanets(filename);
+        int length = planets.length;
         /*Draw the background. */
         StdDraw.setScale(-radius, radius);
         StdDraw.picture(0, 0, "images/starfield.jpg", 2 * radius, 2 * radius);
@@ -40,14 +46,14 @@ public class NBody {
         }
         StdDraw.enableDoubleBuffering();
         for (double t = 0; t <= T; t += dt) {
-            double[] xForce = new double[5];
-            double[] yForce = new double[5];
-            for (int i = 0; i < 5; i += 1) {
-                xForce[i] = planets[i].calcNetForceExertedByX(planets);
-                yForce[i] = planets[i].calcNetForceExertedByY(planets);
+            double[] xForce = new double[length];
+            double[] yForce = new double[length];
+            for (int j = 0; j < length; j += 1) {
+                xForce[j] = planets[j].calcNetForceExertedByX(planets);
+                yForce[j] = planets[j].calcNetForceExertedByY(planets);
             }
-            for (int j = 0; j < 5; j += 1) {
-                planets[j].update(dt, xForce[j], yForce[j]);
+            for (int n = 0; n < length; n += 1) {
+                planets[n].update(dt, xForce[n], yForce[n]);
             }
             StdDraw.picture(0, 0, "images/starfield.jpg", 2 * radius, 2 * radius);
             /* Draws five cool planets. */

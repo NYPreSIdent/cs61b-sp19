@@ -20,13 +20,24 @@
             size = 0;
         }
 
-        public LinkedListDeque(LinkedListDeque other) {
-            sentinel = other.sentinel;
-            size = other.size;
+        public LinkedListDeque(LinkedListDeque<T> other) {
+            sentinel = new IntNode(null);
+            sentinel.prev = sentinel;
+            sentinel.next = sentinel;
+            size = 0;
+
+            for (int i = 0; i < other.size(); i += 1) {
+                addLast(other.get(i));
+                size += 1;
+            }
+        }
+
+        public int size() {
+            return size;
         }
 
         public boolean isEmpty() {
-            return sentinel.prev == sentinel.next;
+            return (sentinel.prev == sentinel.next) && (size == 0);
         }
 
         /** Adds an item to the front of the deque. */
@@ -99,7 +110,7 @@
         /** Prints all the elements of the Deque. */
         public void printDeque() {
             IntNode P = sentinel.next;
-            while (P != null) {
+            while (P.item != null) {
                 System.out.print(P.item + " ");
                 P = P.next;
             }

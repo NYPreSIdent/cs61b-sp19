@@ -1,9 +1,9 @@
 import java.rmi.server.RMIFailureHandler;
 
-public class ArrayDeque {
+public class ArrayDeque<Blorp> {
 
     /** The starting size of our array list. */
-    private int[] items;
+    private Blorp[] items;
     private int size;
     private int first;
     private int last;
@@ -11,14 +11,14 @@ public class ArrayDeque {
     private final double Rfactor = 0.25;
 
     public ArrayDeque() {
-        items = new int[8];
+        items = (Blorp[]) new Object[8];
         size = 0;
         first = items.length / 2;
         last = items.length / 2;
     }
 
     /** adds item to the front of the list. */
-    public void addFirst(int item) {
+    public void addFirst(Blorp item) {
         first -= 1;
         if (isReachtheEnd(first)) {
             first = items.length - 1;
@@ -31,7 +31,7 @@ public class ArrayDeque {
     }
 
     /** adds item to the back of the list. */
-    public void addLast(int item) {
+    public void addLast(Blorp item) {
         last += 1;
         if (isReachtheEnd(last)) {
            last = 0;
@@ -45,6 +45,7 @@ public class ArrayDeque {
 
     /** removes first item from the list, */
     public void revomeFirst() {
+        items[first] = null;
         first += 1;
         size -= 1;
         if (isReachtheEnd(first)) {
@@ -57,6 +58,7 @@ public class ArrayDeque {
 
     /** removes last item from the list. */
     public void removeLast() {
+        items[last] = null;
         last -= 1;
         size -= 1;
         if (isReachtheEnd(last)) {
@@ -67,11 +69,11 @@ public class ArrayDeque {
         }
     }
 
-    public int getFirst() {
+    public Blorp getFirst() {
         return items[first];
     }
 
-    public int getLast() {
+    public Blorp getLast() {
         return items[last];
     }
 
@@ -82,20 +84,7 @@ public class ArrayDeque {
 
     /** resizing the list. */
     private void resize() {
-        int length = size / (factor * 2);
-        int[] result = new int[length];
-        if (isOverLap()) {
-            System.arraycopy(items, 0, result, items.length / 2, size);
-            first = items.length / 2;
-            last = first + size;
-        } else if (first < last) {
-            System.arraycopy(items, first, result, first, size);
-        } else {
-            System.arraycopy(items, 0, result, 0, last + 1);
-            System.arraycopy(items, first, result, length - (last + 1), size - (last + 1));
-            first = length - (last + 1);
-        }
-        items = result;
+
     }
 
     /** There are three meanings:
@@ -115,6 +104,8 @@ public class ArrayDeque {
     private boolean isOverLap() {
         return first == last;
     }
+
+
 
 
 }

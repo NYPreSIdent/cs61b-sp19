@@ -5,8 +5,9 @@ public class ArrayTest {
 
     @Test
     public void addFirstTest() {
-        ArrayDeque result = new ArrayDeque();
+        ArrayDeque<Integer> result = new ArrayDeque<>();
         int expectedSize = 6;
+        Integer expected = 6;
 
         result.addFirst(1);
         result.addFirst(2);
@@ -16,13 +17,14 @@ public class ArrayTest {
         result.addFirst(6);
 
         assertEquals(expectedSize, result.size());
-        assertEquals(6, result.getFirst());
+        assertEquals(expected, result.getFirst());
     }
 
     @Test
     public void addLastTest() {
-        ArrayDeque result = new ArrayDeque();
+        ArrayDeque<Integer> result = new ArrayDeque<>();
         int expectedSize = 6;
+        Integer expected = 6;
 
         result.addLast(1);
         result.addLast(2);
@@ -32,22 +34,12 @@ public class ArrayTest {
         result.addLast(6);
 
         assertEquals(expectedSize, result.size());
-        assertEquals(6, result.getLast());
+        assertEquals(expected, result.getLast());
     }
 
+    /** To test the list is or not empty. */
     @Test
-    public void LapTest() {
-        ArrayDeque result = new ArrayDeque();
-        int expectedSize = 1;
-
-        result.addLast(1);
-        result.addLast(2);
-        result.addLast(3);
-        result.addLast(4);
-        result.addLast(5);
-
-
-        assertEquals(expectedSize, result.size());
-        assertEquals(1, result.getFirst());
+    public void testIsEmpty() {
+        ArrayDeque
     }
 }

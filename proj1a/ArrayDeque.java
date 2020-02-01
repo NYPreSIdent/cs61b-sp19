@@ -1,9 +1,9 @@
 import java.rmi.server.RMIFailureHandler;
 
-public class ArrayDeque<Blorp> {
+public class ArrayDeque {
 
     /** The starting size of our array list. */
-    private Blorp[] items;
+    private int[] items;
     private int size;
     private int first;
     private int last;
@@ -11,14 +11,14 @@ public class ArrayDeque<Blorp> {
     private final double Rfactor = 0.25;
 
     public ArrayDeque() {
-        items = (Blorp[]) new Object[8];
+        items = new int[8];
         size = 0;
         first = items.length / 2 + 1;
         last = items.length / 2;
     }
 
     /** adds item to the front of the list. */
-    public void addFirst(Blorp item) {
+    public void addFirst(int item) {
         first -= 1;
         size += 1;
         if (isReachtheEnd(first)) {
@@ -31,7 +31,7 @@ public class ArrayDeque<Blorp> {
     }
 
     /** adds item to the back of the list. */
-    public void addLast(Blorp item) {
+    public void addLast(int item) {
         last += 1;
         size += 1;
         if (isReachtheEnd(last)) {
@@ -46,7 +46,7 @@ public class ArrayDeque<Blorp> {
     /** removes first item from the list, */
     public void revomeFirst() {
         if (!isEmpty()) {
-            items[first] = null;
+            items[first] = 0;
             first += 1;
             size -= 1;
             if (isReachtheEnd(first)) {
@@ -63,7 +63,7 @@ public class ArrayDeque<Blorp> {
     /** removes last item from the list. */
     public void removeLast() {
         if (!isEmpty()) {
-            items[last] = null;
+            items[last] = 0;
             last -= 1;
             size -= 1;
             if (isReachtheEnd(last)) {
@@ -77,22 +77,30 @@ public class ArrayDeque<Blorp> {
         }
     }
 
-    public Blorp getFirst() {
-        return items[first];
+    public int getFirst() {
+        if (!isEmpty()) {
+            return items[first];
+        } else {
+            return 0;
+        }
     }
 
-    public Blorp getLast() {
-        return items[last];
+    public int getLast() {
+        if (!isEmpty()) {
+            return items[last];
+        } else {
+            return 0;
+        }
     }
 
     /** Gets ith item from the list. */
-    public Blorp get(int i) {
+    public int get(int i) {
         if (first + i >= items.length) {
             int index = i + first - items.length;
             if (index <= last) {
                 return items[index];
             } else {
-                return null;
+                return 0;
             }
         } else {
             return items[i + first];
@@ -107,7 +115,7 @@ public class ArrayDeque<Blorp> {
     /** resizing the list. */
     private void enlarge() {
         int length = items.length * 2;
-        Blorp[] result = (Blorp []) new Object[length];
+        int[] result = new int[length];
         System.arraycopy(items, first, result, length / 4, items.length - first);
         System.arraycopy(items, 0, result, length / 4 + size - first - 1, last + 1);
         items = result;
@@ -118,14 +126,14 @@ public class ArrayDeque<Blorp> {
     private void shrink() {
         if (first < last) {
             int length = size * 3;
-            Blorp[] result = (Blorp []) new Object[length];
+            int[] result = new int[length];
             System.arraycopy(items, first, result, items.length / 3, size);
             first = items.length / 3;
             last = size + first - 1;
             items = result;
         } else {
             int length = size * 2;
-            Blorp[] result = (Blorp []) new Object[length];
+            int[] result = new int[length];
             System.arraycopy(items, first, result, length / 4, items.length - first);
             System.arraycopy(items, 0, result,  length / 4 + size - last - 1, last + 1);
             first = length / 4;
@@ -153,6 +161,6 @@ public class ArrayDeque<Blorp> {
     }
 
     public boolean isEmpty() {
-        return (items[first] == null) || (items[last] == null);
+        return (items[first] == 0) || (items[last] == 0);
     }
 }

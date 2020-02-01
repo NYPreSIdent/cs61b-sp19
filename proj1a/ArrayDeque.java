@@ -7,7 +7,7 @@ public class ArrayDeque<Blorp> {
     private int size;
     private int first;
     private int last;
-    private int factor;
+    private double factor;
     private final double Rfactor = 0.25;
 
     public ArrayDeque() {
@@ -116,10 +116,20 @@ public class ArrayDeque<Blorp> {
     }
 
     private void shrink() {
-        int length = size * 2;
         if (first < last) {
+            int length = size * 3;
             Blorp[] result = (Blorp []) new Object[length];
-            System.arraycopy(items, first, result, first, size);
+            System.arraycopy(items, first, result, items.length / 3, size);
+            first = items.length / 3;
+            last = size + first - 1;
+            items = result;
+        } else {
+            int length = size * 2;
+            Blorp[] result = (Blorp []) new Object[length];
+            System.arraycopy(items, first, result, length / 4, items.length - first);
+            System.arraycopy(items, 0, result,  length / 4 + size - last - 1, last + 1);
+            first = length / 4;
+            last = first + size - 1;
             items = result;
         }
     }
@@ -130,7 +140,7 @@ public class ArrayDeque<Blorp> {
      *  3. size is larger than 16 and usage factor should less than 0.25.
      */
     private boolean isOverSize() {
-        factor = size / items.length;
+        factor = Double.valueOf(size) / Double.valueOf(items.length);
         return (factor < Rfactor) && (items.length >= 16);
     }
 

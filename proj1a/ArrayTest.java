@@ -127,14 +127,14 @@ public class ArrayTest {
     @Test
     public void shrinkTest() {
         ArrayDeque<Integer> result = new ArrayDeque<>();
-        for (int i = 1; i <= 50; i += 1) {
-            result.addFirst(i);
+        for (int i = 1; i <= 1000; i += 1) {
+            result.addLast(i);
         }
         for (int count = 0; count < 45; count += 1) {
-            result.removeLast();
+            result.revomeFirst();
         }
 
-        Integer expected = 3;
+        Integer expected = 48;
         Integer actual = result.get(2);
         assertEquals(expected, actual);
     }

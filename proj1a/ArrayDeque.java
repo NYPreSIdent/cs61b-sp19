@@ -42,7 +42,7 @@ public class ArrayDeque<T> {
     }
 
     /** removes first item from the list, */
-    public T revomeFirst() {
+    public T removeFirst() {
         if (!isEmpty()) {
             T result = items[first];
             items[first] = null;

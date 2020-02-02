@@ -20,18 +20,6 @@ public class LinkedListDeque<T> {
         size = 0;
     }
 
-    public LinkedListDeque(LinkedListDeque<T> other) {
-        sentinel = new IntNode(null);
-        sentinel.prev = sentinel;
-        sentinel.next = sentinel;
-        size = 0;
-
-        for (int i = 0; i < other.size(); i += 1) {
-            addLast(other.get(i));
-            size += 1;
-        }
-    }
-
     public int size() {
         return size;
     }

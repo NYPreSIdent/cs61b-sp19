@@ -81,14 +81,6 @@ public class ArrayDeque<T> {
         return null;
     }
 
-    public T getFirst() {
-        return items[first];
-    }
-
-    public T getLast() {
-        return items[last];
-    }
-
     /** Gets ith item from the list. */
     public T get(int i) {
         if (first + i >= items.length) {

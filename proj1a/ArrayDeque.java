@@ -42,8 +42,9 @@ public class ArrayDeque<T> {
     }
 
     /** removes first item from the list, */
-    public void revomeFirst() {
+    public T revomeFirst() {
         if (!isEmpty()) {
+            T result = items[first];
             items[first] = null;
             first += 1;
             size -= 1;
@@ -55,12 +56,15 @@ public class ArrayDeque<T> {
             } else if (isOverLap()) {
                 enlarge();
             }
+            return result;
         }
+        return null;
     }
 
     /** removes last item from the list. */
-    public void removeLast() {
+    public T removeLast() {
         if (!isEmpty()) {
+            T result = items[last];
             items[last] = null;
             last -= 1;
             size -= 1;
@@ -72,7 +76,9 @@ public class ArrayDeque<T> {
             } else if (isOverLap()) {
                 enlarge();
             }
+            return result;
         }
+        return null;
     }
 
     public T getFirst() {

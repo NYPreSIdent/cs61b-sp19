@@ -1,9 +1,7 @@
-import java.rmi.server.RMIFailureHandler;
-
-public class ArrayDeque {
+public class ArrayDeque<T> {
 
     /** The starting size of our array list. */
-    private int[] items;
+    private T[] items;
     private int size;
     private int first;
     private int last;
@@ -11,14 +9,14 @@ public class ArrayDeque {
     private final double Rfactor = 0.25;
 
     public ArrayDeque() {
-        items = new int[8];
+        items = (T[]) new Object[8];
         size = 0;
         first = items.length / 2 + 1;
         last = items.length / 2;
     }
 
     /** adds item to the front of the list. */
-    public void addFirst(int item) {
+    public void addFirst(T item) {
         first -= 1;
         size += 1;
         if (isReachtheEnd(first)) {
@@ -31,7 +29,7 @@ public class ArrayDeque {
     }
 
     /** adds item to the back of the list. */
-    public void addLast(int item) {
+    public void addLast(T item) {
         last += 1;
         size += 1;
         if (isReachtheEnd(last)) {
@@ -46,7 +44,7 @@ public class ArrayDeque {
     /** removes first item from the list, */
     public void revomeFirst() {
         if (!isEmpty()) {
-            items[first] = 0;
+            items[first] = null;
             first += 1;
             size -= 1;
             if (isReachtheEnd(first)) {
@@ -63,7 +61,7 @@ public class ArrayDeque {
     /** removes last item from the list. */
     public void removeLast() {
         if (!isEmpty()) {
-            items[last] = 0;
+            items[last] = null;
             last -= 1;
             size -= 1;
             if (isReachtheEnd(last)) {
@@ -77,30 +75,22 @@ public class ArrayDeque {
         }
     }
 
-    public int getFirst() {
-        if (!isEmpty()) {
-            return items[first];
-        } else {
-            return 0;
-        }
+    public T getFirst() {
+        return items[first];
     }
 
-    public int getLast() {
-        if (!isEmpty()) {
-            return items[last];
-        } else {
-            return 0;
-        }
+    public T getLast() {
+        return items[last];
     }
 
     /** Gets ith item from the list. */
-    public int get(int i) {
+    public T get(int i) {
         if (first + i >= items.length) {
             int index = i + first - items.length;
             if (index <= last) {
                 return items[index];
             } else {
-                return 0;
+                return null;
             }
         } else {
             return items[i + first];
@@ -115,7 +105,7 @@ public class ArrayDeque {
     /** resizing the list. */
     private void enlarge() {
         int length = items.length * 2;
-        int[] result = new int[length];
+        T[] result = (T []) new Object[length];
         System.arraycopy(items, first, result, length / 4, items.length - first);
         System.arraycopy(items, 0, result, length / 4 + size - first - 1, last + 1);
         items = result;
@@ -126,14 +116,14 @@ public class ArrayDeque {
     private void shrink() {
         if (first < last) {
             int length = size * 3;
-            int[] result = new int[length];
+            T[] result = (T []) new Object[length];
             System.arraycopy(items, first, result, items.length / 3, size);
             first = items.length / 3;
             last = size + first - 1;
             items = result;
         } else {
             int length = size * 2;
-            int[] result = new int[length];
+            T[] result = (T []) new Object[length];
             System.arraycopy(items, first, result, length / 4, items.length - first);
             System.arraycopy(items, 0, result,  length / 4 + size - last - 1, last + 1);
             first = length / 4;
@@ -161,6 +151,13 @@ public class ArrayDeque {
     }
 
     public boolean isEmpty() {
-        return (items[first] == 0) || (items[last] == 0);
+        return (items[first] == null) || (items[last] == null);
+    }
+    
+    public void printDeque() {
+        for (int i = 0; i < size; i++) {
+            System.out.print(get(i) + " ");
+        }
+        System.out.println();
     }
 }

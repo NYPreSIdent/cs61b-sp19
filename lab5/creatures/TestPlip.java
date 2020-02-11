@@ -32,10 +32,18 @@ public class TestPlip {
 
     @Test
     public void testReplicate() {
-        // TODO
+
+        //  Every new energy of character is half than before.
+        Plip p = new Plip(1.2);
+        Plip np = p.replicate();
+
+        assertEquals(p.energy(), np.energy(), 0.01);
+        assertEquals(0.6, p.energy(), 0.01);
+        assertEquals(0.6, np.energy(), 0.01);
+        assertNotSame(p, np);
     }
 
-    //@Test
+    @Test
     public void testChoose() {
 
         // No empty adjacent spaces; stay.

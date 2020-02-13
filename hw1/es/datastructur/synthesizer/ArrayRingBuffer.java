@@ -21,7 +21,7 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
     public ArrayRingBuffer(int capacity) {
         rb = (T[]) new Object[capacity];
         first = capacity / 2;
-        last = capacity / 2 + 1;
+        last = capacity / 2 - 1;
         fillCount = 0;
     }
 
@@ -35,6 +35,8 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
             throw new RuntimeException("Ring buffer overflow");
         }
         last = plusOne(last);
+        rb[last] = x;
+        fillCount += 1;
     }
 
     /**
@@ -45,7 +47,14 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
     public T dequeue() {
         // TODO: Dequeue the first item. Don't forget to decrease fillCount and
         //       update first.
-        return null;
+        if (isEmpty()) {
+            throw new RuntimeException("Ring buffer overflow");
+        }
+        T result = rb[first];
+        rb[first] = null;
+        first = plusOne(first);
+        fillCount -= 1;
+        return result;
     }
 
     /**
@@ -56,30 +65,30 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
     public T peek() {
         // TODO: Return the first item. None of your instance variables should
         //       change.
-        return null;
+        return rb[first];
     }
 
     /** Return size of the buffer. */
     @Override
     public int capacity() {
-        return 0;
+        return rb.length;
     }
 
     /** Return number of items currently in the buffer. */
     @Override
     public int fillCount() {
-        return 0;
+        return fillCount;
     }
 
     /** return true if buffer is empty. */
     @Override
     public boolean isEmpty() {
-        return true;
+        return fillCount() == 0;
     }
 
     @Override
     public boolean isFull() {
-        return true;
+        return capacity() == fillCount();
     }
 
     /** return the relative position after plussing one for index. */

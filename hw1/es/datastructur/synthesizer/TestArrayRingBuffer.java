@@ -16,17 +16,17 @@ public class TestArrayRingBuffer {
         }
 
         /* Test1 */
-        //assertTrue(arb.isFull());
+        assertTrue(arb.isFull());
         assertEquals(Integer.valueOf(0), arb.peek());
         arb.dequeue();
         arb.dequeue();
         assertEquals(Integer.valueOf(2), arb.peek());
-        assertEquals(Integer.valueOf(3), arb.dequeue());
+        assertEquals(Integer.valueOf(2), arb.dequeue());
 
-    /*
-        for (int j = 0; j < 10; j += 1) {
+        /* Test2 */
+        for (int j = 0; j < 7; j += 1) {
             arb.dequeue();
         }
-        assertTrue(arb.isEmpty()); */
+        assertTrue(arb.isEmpty());
     }
 }

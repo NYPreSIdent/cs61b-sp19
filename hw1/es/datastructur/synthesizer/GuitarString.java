@@ -1,5 +1,7 @@
 package es.datastructur.synthesizer;
 
+import edu.princeton.cs.algs4.StdAudio;
+
 public class GuitarString {
     private static final int SR = 44100;      // Sampling Rate
     private static final double DECAY = .996; // energy decay factor
@@ -20,7 +22,8 @@ public class GuitarString {
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
         double r = Math.random() - 0.5;
-        while (!buffer.isFull()) {
+        while (!(buffer.peek() == r)) {
+            buffer.dequeue();
             buffer.enqueue(r);
         }
     }
@@ -29,13 +32,8 @@ public class GuitarString {
      * the Karplus-Strong algorithm.
      */
     public void tic() {
-        while (!buffer.isFull()) {
-            buffer.dequeue();
-        }
-        while (!buffer.isEmpty()) {
             double curr = buffer.dequeue();
             buffer.enqueue(((curr + buffer.peek()) / 2) * DECAY);
-        }
     }
 
     /* Return the double at the front of the buffer. */

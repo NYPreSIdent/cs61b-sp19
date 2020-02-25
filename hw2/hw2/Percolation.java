@@ -24,18 +24,19 @@ public class Percolation {
                 grid[i][j] = translation(j, i, N);
             }
         }
-        for (int elem : grid[0]) {
-            set.union(elem, top);
-        }
-        for (int elem : grid[N - 1]) {
-            set.union(elem, bottom);
-        }
     }
 
     /* open the site(row, col) if it is not open already. */
     public void open(int row, int col) {
         if (isOpen(row, col)) return;
+        int position = translation(col, row, grid.length);
         grid[row][col] = -1;
+        if (row == 0) {
+            set.union(position, top);
+        }
+        if (row == grid.length - 1) {
+            set.union(position, bottom);
+        }
         link(row, col);
         number += 1;
     }
@@ -49,7 +50,7 @@ public class Percolation {
     /* is the site(row, col) full? */
     public boolean isFull(int row, int col) {
         if (isOverBound(row, col)) throw new IndexOutOfBoundsException();
-        return true;
+        return set.connected(translation(col, row, grid.length), top);
     }
 
     /* number of open sites. */
@@ -79,26 +80,26 @@ public class Percolation {
         // left corner case.
         if (col == 0) {
             if (isOpen(row, col + 1)) {
-                set.union(originPosition, translation(row, col + 1, grid.length));
+                set.union(originPosition, translation(col + 1, row, grid.length));
             }
             // left top case.
             if (row == 0) {
                 if (isOpen(row + 1, col)) {
-                    set.union(originPosition, translation(row + 1, col, grid.length));
+                    set.union(originPosition, translation(col, row + 1, grid.length));
                 }
             }
             // left bottom case.
             if (row == grid.length - 1) {
                 if (isOpen(row - 1, col)) {
-                    set.union(originPosition, translation(row - 1, col, grid.length));
+                    set.union(originPosition, translation(col, row - 1, grid.length));
                 }
             }
-            if (row != grid.length && row != 0) {
+            if (row < grid.length - 1 && row > 0) {
                 if (isOpen(row - 1, col)) {
-                    set.union(originPosition, translation(row - 1, col, grid.length));
+                    set.union(originPosition, translation(col, row - 1, grid.length));
                 }
                 if (isOpen(row + 1, col)) {
-                    set.union(originPosition, translation(row + 1, col, grid.length));
+                    set.union(originPosition, translation(col, row + 1, grid.length));
                 }
             }
             return;
@@ -106,27 +107,27 @@ public class Percolation {
 
         // right corner case.
         if (col == grid.length - 1) {
-            if (isOpen(row - 1, col)) {
-                set.union(originPosition, translation(row - 1, col, grid.length));
+            if (isOpen(1, col - 1)) {
+                set.union(originPosition, translation(col - 1, row, grid.length));
             }
             // right top case.
             if (row == 0) {
                 if (isOpen(row + 1, col)) {
-                    set.union(originPosition, translation(row + 1, col, grid.length));
+                    set.union(originPosition, translation(col, row + 1, grid.length));
                 }
             }
             // right bottom case.
             if (row == grid.length - 1) {
                 if (isOpen(row - 1, col)) {
-                    set.union(originPosition, translation(row - 1, col, grid.length));
+                    set.union(originPosition, translation(col, row - 1, grid.length));
                 }
             }
             if (row != grid.length - 1 && row != 0) {
                 if (isOpen(row - 1, col)) {
-                    set.union(originPosition, translation(row - 1, col, grid.length));
+                    set.union(originPosition, translation(col, row - 1, grid.length));
                 }
                 if (isOpen(row + 1, col)) {
-                    set.union(originPosition, translation(row + 1, col, grid.length));
+                    set.union(originPosition, translation(col, row + 1, grid.length));
                 }
             }
             return;
@@ -161,7 +162,7 @@ public class Percolation {
         }
 
         // common case.
-        if (isOpen(row - 1, col)) {
+        if (isOpen(row + 1, col)) {
             set.union(originPosition, translation(col, row + 1, grid.length));
         }
         if (isOpen(row, col - 1)) {
@@ -170,8 +171,8 @@ public class Percolation {
         if (isOpen(row, col + 1)) {
             set.union(originPosition, translation(col + 1, row, grid.length));
         }
-        if (isOpen(row + 1, col)) {
-            set.union(originPosition, translation(col, row + 1, grid.length));
+        if (isOpen(row - 1, col)) {
+            set.union(originPosition, translation(col, row - 1, grid.length));
         }
     }
 

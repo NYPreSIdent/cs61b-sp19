@@ -21,14 +21,16 @@ public class PercolationStats {
     /* sample mean of percolation threshold. */
     public double mean() {
         allSamples = new double[performTimes];
-        int chosenCol = StdRandom.uniform(0, number);
-        int chosenRow = StdRandom.uniform(0, number);
         for (int i = 0; i < performTimes; i += 1) {
             double times = 0;
             Percolation testSample = pf.make(number);
             while (!testSample.percolates()) {
-                testSample.open(chosenRow, chosenCol);
-                times += 1;
+                int chosenRow = StdRandom.uniform(0, number);
+                int chosenCol = StdRandom.uniform(0, number);
+                if (!testSample.isOpen(chosenRow, chosenCol)) {
+                    testSample.open(chosenRow, chosenCol);
+                    times += 1;
+                }
             }
             allSamples[i] = times / (number * number);
         }

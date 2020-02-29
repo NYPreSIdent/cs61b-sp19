@@ -2,11 +2,7 @@ package hw3.hash;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class TestSimpleOomage {
@@ -22,10 +18,17 @@ public class TestSimpleOomage {
 
     @Test
     public void testHashCodePerfect() {
-        /* TODO: Write a test that ensures the hashCode is perfect,
-          meaning no two SimpleOomages should EVER have the same
-          hashCode UNLESS they have the same red, blue, and green values!
-         */
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int r = 5; r <= 255; r *= 5) {
+            for (int g = 5; g <= 255; g *= 5) {
+                for (int b = 5; b <= 255; b *= 5) {
+                    SimpleOomage testCase = new SimpleOomage(r, g, b);
+                    int hashcode = testCase.hashCode();
+                    assertFalse(map.containsKey(hashcode));
+                    map.put(hashcode, hashcode);
+                }
+            }
+        }
     }
 
     @Test
@@ -39,7 +42,7 @@ public class TestSimpleOomage {
         assertNotEquals(ooA, "ketchup");
     }
 
-    /*
+
     @Test
     public void testHashCodeAndEqualsConsistency() {
         SimpleOomage ooA = new SimpleOomage(5, 10, 20);
@@ -47,7 +50,7 @@ public class TestSimpleOomage {
         HashSet<SimpleOomage> hashSet = new HashSet<>();
         hashSet.add(ooA);
         assertTrue(hashSet.contains(ooA2));
-    }*/
+    }
 
     /* TODO: Uncomment this test after you finish haveNiceHashCodeSpread in OomageTestUtility */
     /*@Test

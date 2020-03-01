@@ -1,13 +1,12 @@
 import java.util.*;
 
 public class MyHashMap<K, V> implements Map61B<K, V> {
-    private int initialSize;
     private double loadFactor;
     private LinkedList<Pair<K, V>>[] bucket;
     private int size;
     private HashSet<K> set;
 
-    private class Pair<K, V> {
+    private static class Pair<K, V> {
         private K key;
         private V value;
 
@@ -26,19 +25,21 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
 
     public MyHashMap() {
-        new MyHashMap(16, 0.75);
+        this(16);
     }
 
     public MyHashMap(int initialSize) {
-        new MyHashMap(initialSize, 0.75);
+        this(initialSize, 0.75);
     }
 
     public MyHashMap(int initialSize, double loadFactor) {
-        this.initialSize = initialSize;
         this.loadFactor = loadFactor;
-        bucket = (LinkedList<Pair<K, V>>[]) new Object[initialSize];
+        bucket = (LinkedList<Pair<K, V>>[]) new LinkedList[initialSize];
         size = 0;
         set = new HashSet<>();
+        for (int i = 0; i < initialSize; i += 1) {
+            bucket[i] = new LinkedList<>();
+        }
     }
 
     public static class getIteratorHelper<K> implements Iterator<K> {
@@ -58,23 +59,24 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return new getIteratorHelper<>();
     }
 
-    private double calLoadFactor() {
-        return (double) size / bucket.length;
+    private double calLoadFactor(LinkedList<Pair<K, V>>[] lst) {
+        return (double) size / lst.length;
     }
 
     /** Remove all of the mapping from this map. */
     @Override
     public void clear() {
         size = 0;
-        bucket = (LinkedList<Pair<K, V>>[]) new Object[bucket.length];
+        for (int i = 0; i < bucket.length; i += 1) {
+            bucket[i] = new LinkedList<>();
+        }
+        set = new HashSet<>();
     }
 
     /** Return true if this map contains a mapping for the specific key. */
     @Override
     public boolean containsKey(K key) {
-        if (key == null) return false;
-        int hashCode = hash(key);
-        return bucket[hashCode] != null;
+        return set.contains(key);
     }
 
     /**
@@ -84,17 +86,23 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public V get(K key) {
         if (key == null) return null;
-        int hashCode = hash(key);
+        int hashCode = hash(key, bucket);
         if (bucket[hashCode] != null) {
-            return deepSearch(bucket[hashCode], key).getValue();
+            Pair<K, V> result = deepSearch(bucket[hashCode], key);
+            if (result != null) {
+                return result.getValue();
+            }
         }
         return null;
     }
 
     /** Return value when the provided key satisfies the link-list content. */
     private Pair<K, V> deepSearch(LinkedList<Pair<K, V>> lst, K key) {
+        if (lst.isEmpty()) {
+            return null;
+        }
         Pair<K, V> first = lst.removeFirst();
-        if (first.getKey() == key) {
+        if (first.getKey().equals(key)) {
             lst.addFirst(first);
             return first;
         } else {
@@ -121,25 +129,60 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
 
     private void put(K key, V value, LinkedList<Pair<K, V>>[] lst) {
+        if (!containsKey(key)) {
+            size += 1;
+        }
         if (key == null || value == null) {
             return;
         }
-        if (calLoadFactor() > loadFactor) {
-            resize
+        if (calLoadFactor(lst) > loadFactor) {
+            resize();
+            lst = bucket;
+        }
+        int hashCode = hash(key, lst);
+        boolean AlreadyExist = contains(lst[hashCode], key);
+        if (!AlreadyExist) {
+            lst[hashCode].addFirst(new Pair<>(key, value));
+        } else {
+            for (Pair<K, V> elem : lst[hashCode]) {
+                if (elem.getKey().equals(key)) {
+                    elem.value = value;
+                }
+            }
         }
         set.add(key);
-        int hashCode = hash(key);
+    }
+
+    /** Return false if lst contains the key. */
+    private boolean contains(LinkedList<Pair<K, V>> lst, K key) {
+        if (lst.isEmpty()) {
+            return false;
+        }
+        for (Pair<K, V> elem : lst) {
+            if (elem == null) {
+                return false;
+            }
+            if (elem.getKey().equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Resizing the capacity of the bucket when loadFactor is exceeded. */
     private void resize() {
-        LinkedList<Pair<K, V>>[] BigSize = (LinkedList<Pair<K, V>>[]) new Object[bucket.length * 2];
-        for (K key : set) {
-            int hashCode = hash(key);
-            Pair<K, V> pair = deepSearch(bucket[hashCode], key);
-            put(pair.getKey(), pair.getValue(), BigSize);
+        LinkedList<Pair<K, V>>[] BigSize = (LinkedList<Pair<K, V>>[]) new LinkedList[bucket.length * 2];
+        for (int i = 0; i < BigSize.length; i += 1) {
+            BigSize[i] = new LinkedList<>();
         }
-        bucket = BigSize;
+        for (K key : set) {
+            int hashCodeBucket = hash(key, bucket);
+            Pair<K, V> pair = deepSearch(bucket[hashCodeBucket], key);
+            if (pair != null) {
+                put(pair.getKey(), pair.getValue(), BigSize);
+            }
+        }
+        this.bucket = BigSize;
     }
 
     /** Returns a Set view of the keys contained in this map. */
@@ -168,7 +211,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         throw new UnsupportedOperationException("Can not remove now!");
     }
 
-    private int hash(K key) {
-        return (key.hashCode() & 0x7fffffff) % bucket.length;
+    private int hash(K key, LinkedList<Pair<K, V>>[] lst) {
+        return (key.hashCode() & 0x7fffffff) % lst.length;
     }
 }

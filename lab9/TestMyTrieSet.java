@@ -29,6 +29,8 @@ public class TestMyTrieSet {
         assertFalse(t.contains("waterYouDoingHere"));
         t.add("waterYouDoingHere");
         assertTrue(t.contains("waterYouDoingHere"));
+        assertFalse(t.contains("z"));
+        assertTrue(t.contains("waterY"));
     }
 
     // assumes add works

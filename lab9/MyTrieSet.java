@@ -1,4 +1,3 @@
-import java.security.Key;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -136,7 +135,21 @@ public class MyTrieSet implements TrieSet61B{
     /** Return the longest prefix of key that exists in the trie. */
     @Override
     public String longestPrefixOf(String key) {
-        return null;
+        return collectLongestPrefix(root, key, "", 0);
+    }
+
+    private String collectLongestPrefix(node n, String key, String result, int length) {
+        if (length == key.length() || n == null) {
+            return result;
+        }
+        int cmp = key.charAt(length) - n.key;
+        if (cmp == 0) {
+            return collectLongestPrefix(n.middle, key, result + n.key.toString(), length + 1);
+        } else if (cmp > 0) {
+            return collectLongestPrefix(n.right, key, result, length);
+        } else {
+            return collectLongestPrefix(n.left, key, result, length);
+        }
     }
 
     /** Return size of this trie. */

@@ -56,6 +56,25 @@ public class TestMyTrieSet {
         }
     }
 
+    @Test
+    public void sanityLongestPrefixTest() {
+        String[] saStrings = new String[]{"same", "sam", "sad", "sap"};
+        String[] otherStrings = new String[]{"a", "awls", "hello", "awlsla"};
+
+        MyTrieSet t = new MyTrieSet();
+        for (String s: saStrings) {
+            t.add(s);
+        }
+        for (String s: otherStrings) {
+            t.add(s);
+        }
+
+        assertEquals("same", t.longestPrefixOf("samenicolonda"));
+        assertEquals("hello", t.longestPrefixOf("hellow"));
+        assertEquals("aw", t.longestPrefixOf("awdjsljf"));
+        assertEquals("awlsl", t.longestPrefixOf("awlslbass"));
+    }
+
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(TestMyTrieSet.class);
     }

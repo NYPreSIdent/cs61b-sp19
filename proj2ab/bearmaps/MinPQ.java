@@ -12,9 +12,13 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     private HashSet<T> set;
 
     public MinPQ() {
-        items = (pair[]) new Object[8];
-        items[0] = new pair(null, Double.MIN_VALUE);
-        size = 0;
+        this.items = new MinPQ.pair[10];
+        this.items[0] = new pair(null, Double.MIN_VALUE);
+        for (int i = 1; i < items.length; i += 1) {
+            items[i] = new pair(null, Double.MAX_VALUE);
+        }
+        this.size = 0;
+        this.set = new HashSet<>();
     }
 
     /* Standing for the priority of item. */
@@ -47,8 +51,8 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     private void sink(int position) {
         while (position * 2 <= size) {
             int j = 2 * position;
-            if (less(j, j + 1)) j += 1;
-            if (!less(position, j)) break;
+            if (!less(j, j + 1)) j += 1;
+            if (less(position, j)) break;
             swap(position, j);
             position = j;
         }
@@ -59,8 +63,11 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     }
 
     private void resize() {
-        pair[] result = (pair[]) new Object[items.length * 2];
-        System.arraycopy(items, 0, result, 0, items.length * 2);
+        pair[] result = new MinPQ.pair[items.length * 2];
+        for (int i = 0; i < result.length; i += 1) {
+            result[i] = new pair(null, Double.MAX_VALUE);
+        }
+        System.arraycopy(items, 0, result, 0, items.length);
         items = result;
     }
 
@@ -86,8 +93,9 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     public T removeSmallest() {
         if (size() == 0) { throw new NoSuchElementException(); }
         T result = items[1].value;
-        items[1] = null;
+        set.remove(result);
         swap(size, 1);
+        items[size] = new pair(null, Double.MAX_VALUE);
         size -= 1;
         sink(1);
         return result;
@@ -117,11 +125,13 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     }
 
     private void changePriorityHelper(T item, double priority, int position) {
-        if (position >= size) {
+        if (position > size) {
             return;
         }
-        if (items[position].equals(item)) {
+        if (items[position].value.equals(item)) {
             items[position].priority = priority;
+            swap(position, 1);
+            sink(1);
             return;
         }
         changePriorityHelper(item, priority, position * 2);

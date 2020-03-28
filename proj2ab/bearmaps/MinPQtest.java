@@ -73,5 +73,4 @@ public class MinPQtest {
         }
         assertEquals("world", testCase.removeSmallest());
     }
-
 }

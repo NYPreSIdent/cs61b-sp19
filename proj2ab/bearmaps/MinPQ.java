@@ -7,26 +7,26 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     /* Adds an item with the given priority value. Throws an
      * IllegalArgumentException if item is already present.
      * You may assume that item is never null. */
-    private pair[] items;
+    private Pair[] items;
     private int size;
     private HashSet<T> set;
 
     public MinPQ() {
-        this.items = new MinPQ.pair[10];
-        this.items[0] = new pair(null, Double.MIN_VALUE);
+        this.items = new MinPQ.Pair[10];
+        this.items[0] = new Pair(null, Double.MIN_VALUE);
         for (int i = 1; i < items.length; i += 1) {
-            items[i] = new pair(null, Double.MAX_VALUE);
+            items[i] = new Pair(null, Double.MAX_VALUE);
         }
         this.size = 0;
         this.set = new HashSet<>();
     }
 
     /* Standing for the priority of item. */
-    private class pair {
-        private T value;
-        private double priority;
+    private class Pair {
+        T value;
+        double priority;
 
-        public pair(T value, double priority) {
+        Pair(T value, double priority) {
             this.value = value;
             this.priority = priority;
         }
@@ -34,10 +34,14 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
 
     @Override
     public void add(T item, double priority) {
-        if (contains(item)) { throw new IllegalArgumentException("The item already in the heap.");}
-        if (isOverFull()) { resize(); }
+        if (contains(item)) {
+            throw new IllegalArgumentException("The item already in the heap.");
+        }
+        if (isOverFull()) {
+            resize();
+        }
         set.add(item);
-        items[size += 1] = new pair(item, priority);
+        items[size += 1] = new Pair(item, priority);
         swim(size);
     }
 
@@ -51,8 +55,12 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     private void sink(int position) {
         while (position * 2 <= size) {
             int j = 2 * position;
-            if (!less(j, j + 1)) j += 1;
-            if (less(position, j)) break;
+            if (!less(j, j + 1)) {
+                j += 1;
+            }
+            if (less(position, j)) {
+                break;
+            }
             swap(position, j);
             position = j;
         }
@@ -63,9 +71,9 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     }
 
     private void resize() {
-        pair[] result = new MinPQ.pair[items.length * 2];
+        Pair[] result = new MinPQ.Pair[items.length * 2];
         for (int i = 0; i < result.length; i += 1) {
-            result[i] = new pair(null, Double.MAX_VALUE);
+            result[i] = new Pair(null, Double.MAX_VALUE);
         }
         System.arraycopy(items, 0, result, 0, items.length);
         items = result;
@@ -84,18 +92,22 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
     /* Returns the minimum item. Throws NoSuchElementException if the PQ is empty. */
     @Override
     public T getSmallest() {
-        if (size() == 0) { throw new NoSuchElementException(); }
+        if (size() == 0) {
+            throw new NoSuchElementException();
+        }
         return items[1].value;
     }
 
     /* Removes and returns the minimum item. Throws NoSuchElementException if the PQ is empty. */
     @Override
     public T removeSmallest() {
-        if (size() == 0) { throw new NoSuchElementException(); }
+        if (size() == 0) {
+            throw new NoSuchElementException();
+        }
         T result = items[1].value;
         set.remove(result);
         swap(size, 1);
-        items[size] = new pair(null, Double.MAX_VALUE);
+        items[size] = new Pair(null, Double.MAX_VALUE);
         size -= 1;
         sink(1);
         return result;
@@ -103,7 +115,7 @@ public class MinPQ<T> implements ExtrinsicMinPQ<T> {
 
     /* put the last item to the top of the heap. */
     private void swap(int size1, int size2) {
-        pair temp = items[size1];
+        Pair temp = items[size1];
         items[size1] = items[size2];
         items[size2] = temp;
     }

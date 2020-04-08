@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.Queue;
 
+import javax.print.attribute.standard.NumberUp;
+
 public class MergeSort {
     /**
      * Removes and returns the smallest item that is in q1 or q2.
@@ -42,8 +44,13 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
-        // Your code here!
-        return null;
+        Queue<Queue<Item>> result = new Queue<>();
+        while (!items.isEmpty()) {
+            Queue<Item> temp = new Queue<>();
+            temp.enqueue(items.dequeue());
+            result.enqueue(temp);
+        }
+        return result;
     }
 
     /**
@@ -61,8 +68,36 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
-        // Your code here!
-        return null;
+        /* bad code... Don't learn me.
+        if (q1 == null) {
+            return q2;
+        }
+        if (q2 == null) {
+            return q1;
+        }
+        Queue<Item> result = new Queue<>();
+        Item temp = q1.dequeue();
+        while (!(q1.isEmpty() || q2.isEmpty())) {
+            if (temp.compareTo(q2.peek()) < 0) {
+                result.enqueue(temp);
+                temp = q1.dequeue();
+            } else {
+                result.enqueue(q2.dequeue());
+            }
+        }
+        while (!q2.isEmpty()) {
+            result.enqueue(q2.dequeue());
+        }
+        while (!q1.isEmpty()) {
+            result.enqueue(q1.dequeue());
+        }
+        return result;
+        */
+        Queue<Item> result = new Queue<>();
+        while (!(q1.isEmpty() && q2.isEmpty())) {
+            result.enqueue(getMin(q1, q2));
+        }
+        return result;
     }
 
     /**
@@ -77,7 +112,11 @@ public class MergeSort {
      */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        // Your code here!
-        return items;
+        Queue<Queue<Item>> result;
+        result = makeSingleItemQueues(items);
+        while (result.size() != 1) {
+            result.enqueue(mergeSortedQueues(result.dequeue(), result.dequeue()));
+        }
+        return result.dequeue();
     }
 }

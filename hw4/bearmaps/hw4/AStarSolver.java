@@ -1,13 +1,8 @@
 package bearmaps.hw4;
 
-import bearmaps.hw4.AStarGraph;
-import bearmaps.hw4.ShortestPathsSolver;
-import bearmaps.hw4.SolverOutcome;
 import bearmaps.proj2ab.ArrayHeapMinPQ;
 import edu.princeton.cs.algs4.Stopwatch;
 
-import javax.crypto.AEADBadTagException;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,16 +11,16 @@ public class AStarSolver<Vertex> implements ShortestPathsSolver<Vertex> {
     private Hashtable<Vertex, Double> disTo;
     private SolverOutcome outcome;
     private List<Vertex> solution;
-    private double TotalWeight;
+    private double totalWeight;
     private double timeSpent;
-    private int TotalNum;
+    private int totalNum;
 
     /*  Constructor which finds the solution, computing everything necessary
         for all other methods
         to return their results in constant time.
      */
     public AStarSolver(AStarGraph<Vertex> input, Vertex start, Vertex end, double timeout) {
-        TotalNum = 0;
+        totalNum = 0;
         solution = new LinkedList<>();
         outcome = SolverOutcome.SOLVED; // serve as a flag.
         Stopwatch st = new Stopwatch();
@@ -37,19 +32,31 @@ public class AStarSolver<Vertex> implements ShortestPathsSolver<Vertex> {
         disTo.put(start, input.estimatedDistanceToGoal(start, end));
 
         while (true) {
+            timeSpent = st.elapsedTime();
+            if (timeSpent > timeout) {
+                outcome = SolverOutcome.TIMEOUT;
+                solution = new LinkedList<>();
+                totalWeight = 0;
+                break;
+            }
             if (MinPQ.isEmpty()) {
                 outcome = SolverOutcome.UNSOLVABLE;
                 solution = new LinkedList<>();
+                totalWeight = 0;
                 break;
             }
+            
             start = MinPQ.removeSmallest();
             solution.add(start);
+            totalNum += 1;
+            
             if (start == end) {
                 break;
             }
             for (WeightedEdge<Vertex> neighbor : input.neighbors(start)) {
                 release(neighbor, MinPQ, input, end);
             }
+            totalWeight = disTo.get(start);
         }
     }
 
@@ -63,7 +70,7 @@ public class AStarSolver<Vertex> implements ShortestPathsSolver<Vertex> {
         Vertex origin = v.from();
         Vertex object = v.to();
         double heuristic = input.estimatedDistanceToGoal(object, end);
-        double relaxWeight = v.weight() + heuristic + disTo.get(origin);
+        double relaxWeight = v.weight() + disTo.get(origin) + heuristic;
 
         if (PQ.contains(object)) {
             if (relaxWeight < disTo.get(object)) {
@@ -100,13 +107,13 @@ public class AStarSolver<Vertex> implements ShortestPathsSolver<Vertex> {
      */
     @Override
     public double solutionWeight() {
-        return TotalWeight;
+        return totalWeight;
     }
 
     /* The total number of priority queue dequeue operations. */
     @Override
     public int numStatesExplored() {
-        return TotalNum;
+        return totalNum;
     }
 
     /*  The total time spent in seconds by the constructor. */

@@ -1,7 +1,7 @@
 package bearmaps.hw4;
 
+import bearmaps.ExtrinsicMinPQ;
 import bearmaps.proj2ab.DoubleMapPQ;
-import bearmaps.proj2ab.ExtrinsicMinPQ;
 import edu.princeton.cs.introcs.Stopwatch;
 
 import java.util.*;

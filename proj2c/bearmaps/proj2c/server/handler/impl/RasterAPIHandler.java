@@ -1,10 +1,12 @@
 package bearmaps.proj2c.server.handler.impl;
 
+import bearmaps.proj2ab.KDTree;
 import bearmaps.proj2c.AugmentedStreetMapGraph;
 import bearmaps.proj2c.server.handler.APIRouteHandler;
 import spark.Request;
 import spark.Response;
 import bearmaps.proj2c.utils.Constants;
+import bearmaps.proj2ab.Point;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,13 +14,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
-import static bearmaps.proj2c.utils.Constants.SEMANTIC_STREET_GRAPH;
-import static bearmaps.proj2c.utils.Constants.ROUTE_LIST;
+import static bearmaps.proj2c.utils.Constants.*;
 
 /**
  * Handles requests from the web browser for map images. These images
@@ -84,12 +83,106 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
      */
     @Override
     public Map<String, Object> processRequest(Map<String, Double> requestParams, Response response) {
-        //System.out.println("yo, wanna know the parameters given by the web browser? They are:");
-        //System.out.println(requestParams);
+        String[][] render_grid;
+        int depth = calculateDepth(requestParams);
+        HashMap<Point, List<Integer>> boxes = new HashMap<>();
+
+        KDTree KD = createKD(depth, boxes);
+
+        int lengthOfLine = (int) Math.pow(2, depth);
+        double unitOfX = ((ROOT_LRLON - ROOT_ULLON) / lengthOfLine) / 2;
+        double unitOfY = ((ROOT_ULLAT - ROOT_LRLAT) / lengthOfLine) / 2;
+
+        Double lrlon = requestParams.get("lrlon");
+        Double ullon = requestParams.get("ullon");
+        Double lrlat = requestParams.get("lrlat");
+        Double ullat = requestParams.get("ullat");
+
+        Point ulp = KD.nearest(ullon, ullat);
+        Point lrp = KD.nearest(lrlon, lrlat);
+
+        List<Integer> ulb = boxes.get(ulp);
+        List<Integer> lrb = boxes.get(lrp);
+
+        render_grid = getWholeArea(ulb, lrb, depth);
+
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented RasterAPIHandler.processRequest, nothing is displayed in "
-                + "your browser.");
+        results.put("depth", depth);
+        results.put("render_grid", render_grid);
+        results.put("raster_ul_lon", ulp.getX() - unitOfX);
+        results.put("raster_ul_lat", ulp.getY() + unitOfY);
+        results.put("raster_lr_lat", lrp.getY() - unitOfY);
+        results.put("raster_lr_lon", lrp.getX() + unitOfX);
+        results.put("query_success", true);
         return results;
+    }
+
+    private String[][] getWholeArea(List<Integer> ulb,
+                                    List<Integer> lrb,
+                                    int depth) {
+        Integer leftOutsetX = ulb.remove(0);
+        Integer leftOutsetY = ulb.remove(0);
+        Integer rightEndX = lrb.remove(0);
+        Integer rightEndY = lrb.remove(0);
+        int offsetx = rightEndX - leftOutsetX;
+        int offsety = rightEndY - leftOutsetY;
+        String[][] result = new String[offsety + 1][offsetx + 1];
+        int indexColumn = 0;
+        for (int y = leftOutsetY; y <= rightEndY; y += 1) {
+            int indexRow = 0;
+            for (int x = leftOutsetX; x <= rightEndX; x += 1) {
+                result[indexColumn][indexRow] = "d" + depth + "_x" + x + "_y" + y + ".png";
+                indexRow += 1;
+            }
+            indexColumn += 1;
+        }
+        return result;
+    }
+
+    private int calculateDepth(Map<String, Double> requestParams) {
+        // initial needed pixel information.
+        Double lrlon = requestParams.get("lrlon");
+        Double ullon = requestParams.get("ullon");
+        Double width = requestParams.get("w");
+        double longDPP = (lrlon - ullon) / width; // what user needed
+        double suitableDPP = Math.abs(ROOT_LRLON - ROOT_ULLON) / TILE_SIZE; // the whole map DPP
+        // shrink double until reach needed DPP.
+        int depth = 0;
+        while (suitableDPP > longDPP) {
+            suitableDPP /= 2;
+            depth += 1;
+        }
+        if (depth > 7) {
+            depth = 7;
+        }
+        return depth;
+    }
+
+    private KDTree createKD(int depth,
+                            HashMap<Point, List<Integer>> boxes) {
+        int lengthOfLine = (int) Math.pow(2, depth);
+        LinkedList<Point> points = new LinkedList<>();
+        double unitOfX = (ROOT_LRLON - ROOT_ULLON) / lengthOfLine;
+        double unitOfY = (ROOT_ULLAT - ROOT_LRLAT) / lengthOfLine;
+        // calculate the middle point of each box and put them into KDTree.
+        double cardinalOfX = ROOT_ULLON + unitOfX / 2;
+        double cardinalOfY = ROOT_ULLAT - unitOfY / 2;
+        double x = cardinalOfX;
+        double y = cardinalOfY;
+        for (int timesX = 0; timesX < lengthOfLine; timesX += 1) {
+            for (int timesY = 0; timesY < lengthOfLine; timesY += 1) {
+                Point point = new Point(x, y);
+                List<Integer> position = new LinkedList<>();
+                position.add(timesX);
+                position.add(timesY);
+                points.add(point);
+                boxes.put(point, position);
+                y -= unitOfY;
+            }
+            x += unitOfX;
+            y = cardinalOfY;
+        }
+        return new KDTree(points);
     }
 
     @Override
@@ -143,7 +236,7 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
      * In Spring 2016, students had to do this on their own, but in 2017,
      * we made this into provided code since it was just a bit too low level.
      */
-    private  void writeImagesToOutputStream(Map<String, Object> rasteredImageParams,
+    private void writeImagesToOutputStream(Map<String, Object> rasteredImageParams,
                                                   ByteArrayOutputStream os) {
         String[][] renderGrid = (String[][]) rasteredImageParams.get("render_grid");
         int numVertTiles = renderGrid.length;

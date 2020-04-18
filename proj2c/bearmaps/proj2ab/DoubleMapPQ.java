@@ -1,6 +1,8 @@
 package bearmaps.proj2ab;
 
 
+import bearmaps.ExtrinsicMinPQ;
+
 import java.util.*;
 
 
